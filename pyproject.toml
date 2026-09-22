@@ -1,0 +1,20 @@
+[project]
+name = "iris-kind"
+version = "0.1.0"
+description = "Kind + Redis Enterprise + published Iris Helm charts for local development."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "pytest>=8.4.2",
+    "pytest-timeout>=2.4.0",
+    "pyyaml>=6.0.2",
+]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+markers = [
+    "openai: requires live OpenAI embeddings",
+    "llm: requires live OpenAI chat completion and asynchronous worker processing",
+]
+testpaths = ["tests"]

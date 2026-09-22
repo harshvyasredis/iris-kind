@@ -1,0 +1,18 @@
+# Local licenses and provider credentials
+*.license
+openai.key
+
+# Rendered manifests and generated credentials/overlays
+.generated/
+.state/
+
+# Per-run step logs
+logs/
+
+# uv / Python
+.venv/
+__pycache__/
+*.pyc
+
+# pytest
+.pytest_cache/

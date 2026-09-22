@@ -1,0 +1,103 @@
+# All local Iris-on-Kind settings live here. Secrets are file paths, never values.
+kind:
+  name: iris
+  # Empty uses kind's default node image for the installed kind version.
+  nodeImage: ""
+  controlPlane:
+    cpus: "2"
+    memory: "2Gi"
+  workers:
+    count: 3
+    cpus: "3"
+    memory: "6Gi"
+
+versions:
+  # This is the only Redis Software pin. The chart chooses its matching
+  # operator and Redis Software images. REC/REDB manifests do not override them.
+  redisEnterpriseOperatorChart: "8.2.0-15"
+  langcacheChart: "0.0.1"
+  ramChart: "0.7.0"
+  contextRetrieverChart: "0.4.2"
+  # Not published at https://helm.redis.io/ai as of 2026-09-22.
+  playbookChart: ""
+  # Latest Redis Insight release as of 2026-09-22 (same digest as :latest).
+  redisInsightImage: "redis/redisinsight:3.8.0"
+
+licenses:
+  # Place these files beside config.yaml. They are gitignored.
+  redisEnterprise: redisenterprise.license
+  ram: ram.license
+  langcache: langcache.license
+  contextRetriever: cr.license
+
+inference:
+  # The same key is used for the local LangCache embedder and RAM
+  # embedding/promotion providers. The file is gitignored.
+  openAIKeyFile: openai.key
+  baseURL: https://api.openai.com/v1
+  embeddingModel: text-embedding-3-large
+  embeddingDimensions: 3072
+  chatModel: gpt-4o
+
+redisEnterpriseCluster:
+  namespace: rec
+  name: rec
+  nodes: 3
+  # Documented Redis Software minimum/default per REC node.
+  cpu: "2"
+  memory: 4Gi
+  # Redis recommends persistent volume size >= 5x node memory.
+  volumeSize: 20Gi
+
+databases:
+  # Redis 8 enables bundled capabilities automatically. Do not add moduleList.
+  # 100MB is the REDB minimum. Keep each Iris role isolated.
+  ids-metadata:
+    memory: 100MB
+  lc-metadata:
+    memory: 100MB
+  lc-cache:
+    memory: 100MB
+  ram-metadata:
+    memory: 100MB
+  ram-store:
+    memory: 100MB
+  ram-jobs:
+    memory: 100MB
+    evictionPolicy: noeviction
+  playbook-metadata:
+    memory: 100MB
+  playbook-content:
+    memory: 100MB
+  cr-metadata:
+    memory: 100MB
+  cr-data:
+    memory: 100MB
+
+iris:
+  namespaces:
+    langcache: langcache
+    ram: ram
+    contextRetriever: context-retriever
+    playbook: playbook
+  resources:
+    # Conservative laptop floors; raise an individual component if it OOMs.
+    langcache:
+      dataplane: {cpu: 100m, memory: 256Mi}
+      controlplane: {cpu: 50m, memory: 128Mi}
+      identityService: {cpu: 50m, memory: 128Mi}
+    ram:
+      server: {cpu: 250m, memory: 512Mi}
+      worker: {cpu: 250m, memory: 512Mi}
+      controlplane: {cpu: 50m, memory: 128Mi}
+      identityService: {cpu: 50m, memory: 128Mi}
+    contextRetriever:
+      admin: {cpu: 50m, memory: 128Mi}
+      mcp: {cpu: 50m, memory: 128Mi}
+
+# Browser GUI for every REDB. Connection JSON is generated from REDB Secrets
+# after databases are Active, then mounted into this pod.
+insight:
+  namespace: rec
+  port: 5540
+  resources: {cpu: 100m, memory: 256Mi}

@@ -95,11 +95,11 @@ workbench stamp is not treated as already done:
 ```bash
 # 1. ~15-minute SDLC lab (Continue + Iris MCP)
 make redo STEP=workshop
-make workshop PACK=sdlc
+sudo env DOCKER_API_VERSION=1.43 make workshop PACK=sdlc
 
 # 2. 90-minute agentic lab (App panel coding arena)
 make redo STEP=workshop
-make workshop PACK=agentic
+sudo env DOCKER_API_VERSION=1.43 make workshop PACK=agentic
 ```
 
 Reload `http://127.0.0.1:8080/` after each switch. `sdlc` and `agentic` pre-wire

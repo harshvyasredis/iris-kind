@@ -1,0 +1,31 @@
+{
+  "retrieval": [
+    {
+      "id": "prior-incident",
+      "question": "Acme traffic stopped overnight with error 30007. Has this happened before?",
+      "citation": "TKT-1847",
+      "maxChars": 3000
+    },
+    {
+      "id": "filter-explanation",
+      "question": "Why would the gateway block a message with code 30007?",
+      "citation": "FD-30007",
+      "entity": "FilterDecision",
+      "maxChars": 1800
+    },
+    {
+      "id": "negative-control",
+      "question": "SMPP binds keep dropping on worker 2. What operational context applies?",
+      "forbiddenCitation": "TKT-1847",
+      "maxChars": 3000
+    }
+  ],
+  "memory": {
+    "latestReply": "quit texting me, I've asked twice",
+    "expectedOptOut": true
+  },
+  "cache": {
+    "prompt": "Who is this and why are you texting me?",
+    "mustIsolateBy": "brand"
+  }
+}

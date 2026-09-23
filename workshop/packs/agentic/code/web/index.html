@@ -2,11 +2,43 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Iris agentic starter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gateway Agent Arena</title>
+    <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <h1>Agentic starter</h1>
-    <p>Call Redis Iris from this app in later exercises.</p>
+    <main>
+      <header>
+        <div>
+          <p class="eyebrow">REDIS IRIS WORKSHOP</p>
+          <h1>Gateway Agent Arena</h1>
+          <p>Earn accuracy. Spend less context. Keep brands isolated.</p>
+        </div>
+        <div id="health" class="health">Checking Iris…</div>
+      </header>
+
+      <section class="controls">
+        <button id="naive">Show naive baseline</button>
+        <button id="retrieve" class="secondary">Run retrieval cases</button>
+        <button id="mine" class="primary">Run my agent</button>
+        <span id="status">Ready.</span>
+      </section>
+
+      <section id="scoreboard" class="scoreboard" aria-live="polite"></section>
+
+      <section class="cases">
+        <div>
+          <p class="eyebrow">CASE RESULTS</p>
+          <h2>What passed—and why</h2>
+        </div>
+        <div id="case-list"><p>Run an agent to see each decision.</p></div>
+      </section>
+
+      <footer>
+        Fictional carrier messaging data. This is a copilot evaluation, not an
+        autonomous gateway control plane.
+      </footer>
+    </main>
     <script type="module" src="/main.js"></script>
   </body>
 </html>

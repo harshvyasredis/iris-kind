@@ -1,0 +1,7 @@
+# Build 3 contract. The kind-agentic cache accepts these exact attributes.
+attributes:
+  brand: TODO
+  intent: TODO
+  channel: TODO
+similarity_threshold: 0.82
+ttl_millis: 86400000

@@ -224,10 +224,12 @@ $(STAMPS)/cr-surface: $(STAMPS)/iris-context-retriever \
 
 $(STAMPS)/workshop: $(STAMPS)/insight $(STAMPS)/langcache-cache $(STAMPS)/ram-store \
 		$(STAMPS)/cr-surface \
-		$(ROOT)/scripts/workshop.py $(ROOT)/scripts/ram_mcp.py \
+		$(ROOT)/scripts/workshop.py $(ROOT)/scripts/agentic_provision.py \
+		$(ROOT)/scripts/ram_mcp.py \
 		$(ROOT)/scripts/langcache_mcp.py $(ROOT)/scripts/cr_mcp.py \
 		$(CONFIG) \
-		$(shell find $(ROOT)/workshop -type f) | $(STAMPS)
+		$(shell find $(ROOT)/workshop -type f \
+			! -path '*/node_modules/*' ! -path '*/dist/*') | $(STAMPS)
 	@$(LOGGED) docker pull $(NGINX_IMAGE) $(TEE_TO)/workshop.log
 	@$(LOGGED) docker build -f $(ROOT)/workshop/docker/web/Dockerfile \
 		-t $(WORKSHOP_WEB_IMAGE) $(ROOT) $(TEE_TO)/workshop.log

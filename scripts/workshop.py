@@ -58,6 +58,12 @@ def assert_pack_requirements(pack: dict[str, Any]) -> None:
         )
 
 
+def _omit_generated_pack_files(info: tarfile.TarInfo) -> tarfile.TarInfo | None:
+    if any(part in {"node_modules", "dist"} for part in Path(info.name).parts):
+        return None
+    return info
+
+
 def pack_tarball(pack: dict[str, Any], continue_yaml: str) -> bytes:
     buf = io.BytesIO()
     pack_dir: Path = pack["dir"]
@@ -65,9 +71,9 @@ def pack_tarball(pack: dict[str, Any], continue_yaml: str) -> bytes:
         docs = pack_dir / "docs"
         code = pack_dir / "code"
         if docs.is_dir():
-            tar.add(docs, arcname="docs")
+            tar.add(docs, arcname="docs", filter=_omit_generated_pack_files)
         if code.is_dir():
-            tar.add(code, arcname="code")
+            tar.add(code, arcname="code", filter=_omit_generated_pack_files)
         info = tarfile.TarInfo(name=".continue/config.yaml")
         payload = continue_yaml.encode("utf-8")
         info.size = len(payload)
@@ -187,6 +193,18 @@ def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def resource_state_path(product: str, requested: object) -> Path:
+    """Map a pack resource name to the state file created by its provisioner."""
+    name = str(requested) if requested not in (True, False, None) else "kind-default"
+    suffix = "default" if name == "kind-default" else name.removeprefix("kind-")
+    endings = {
+        "ram": "store",
+        "langcache": "cache",
+        "context-retriever": "surface",
+    }
+    return STATE / f"{product}-{suffix}-{endings[product]}.json"
+
+
 def discover_cr_mcp_url(namespace: str) -> str | None:
     try:
         raw = run("kubectl", "-n", namespace, "get", "svc", "-o", "json")
@@ -218,7 +236,7 @@ def env_secret(
     ram_name = wanted.get("ram")
     if ram_name and product_present("ram"):
         ram_ns = config["iris"]["namespaces"]["ram"]
-        store = read_json(STATE / "ram-default-store.json")
+        store = read_json(resource_state_path("ram", ram_name))
         data["RAM_URL"] = f"http://redis-agent-memory.{ram_ns}.svc.cluster.local:9000"
         if store.get("storeId"):
             data["RAM_STORE_ID"] = str(store["storeId"])
@@ -226,20 +244,21 @@ def env_secret(
     lc_name = wanted.get("langcache")
     if lc_name and product_present("langcache"):
         lc_ns = config["iris"]["namespaces"]["langcache"]
-        cache = read_json(STATE / "langcache-default-cache.json")
+        cache = read_json(resource_state_path("langcache", lc_name))
         data["LC_URL"] = f"http://langcache.{lc_ns}.svc.cluster.local:9000"
         if cache.get("token"):
             data["LC_TOKEN"] = str(cache["token"])
         if cache.get("cacheId"):
             data["LC_CACHE_ID"] = str(cache["cacheId"])
 
-    if wanted.get("context_retriever") and product_present("context-retriever"):
+    cr_name = wanted.get("context_retriever")
+    if cr_name and product_present("context-retriever"):
         cr_ns = config["iris"]["namespaces"]["contextRetriever"]
         url = discover_cr_mcp_url(cr_ns)
         if url:
             data["CR_MCP_URL"] = url
             data["CR_MCP_PATH"] = "/mcp"
-        surface = read_json(STATE / "context-retriever-default-surface.json")
+        surface = read_json(resource_state_path("context-retriever", cr_name))
         if surface.get("agentKey"):
             data["CR_AGENT_KEY"] = str(surface["agentKey"])
     return data
@@ -546,6 +565,10 @@ def main() -> None:
     pack_name = args.pack or os.environ.get("PACK") or workshop["pack"]
     pack = load_pack(str(pack_name))
     assert_pack_requirements(pack)
+    if pack["id"] == "agentic":
+        from agentic_provision import provision_agentic
+
+        provision_agentic(include_cr=product_present("context-retriever"))
 
     rec_namespace = config["redisEnterpriseCluster"]["namespace"]
     namespace = workshop["namespace"]

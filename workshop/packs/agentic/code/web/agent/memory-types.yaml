@@ -1,0 +1,19 @@
+# Build 2 contract. These types already exist on the kind-agentic store.
+types:
+  opt_out_signal:
+    description: Natural-language request to stop messaging
+    fields:
+      phrasing: string
+      legal_risk: string
+    extraction: TODO
+  identity_confusion:
+    description: Recipient does not recognize the sender
+    fields:
+      phrasing: string
+    extraction: TODO
+  thread_state:
+    description: State needed when a reply arrives days later
+    fields:
+      campaign_id: string
+      last_mt_at: string
+    extraction: TODO

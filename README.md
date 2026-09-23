@@ -87,16 +87,25 @@ kubectl -n ram port-forward svc/redis-agent-memory 9001:9000
 kubectl -n rec port-forward svc/redisinsight 5540:5540
 ```
 
-Packs live under `workshop/packs/`. Default is `hello`. Switch without
-rebuilding Kind:
+Packs live under `workshop/packs/`. `make all` installs `hello`. For a
+facilitated session, switch packs without rebuilding Kind — SDLC first, then
+the agentic arena. `make redo STEP=workshop` is required each time so the
+workbench stamp is not treated as already done:
 
 ```bash
+# 1. ~15-minute SDLC lab (Continue + Iris MCP)
 make redo STEP=workshop
 make workshop PACK=sdlc
+
+# 2. 90-minute agentic lab (App panel coding arena)
+make redo STEP=workshop
+make workshop PACK=agentic
 ```
 
-`sdlc` and `agentic` pre-wire Continue MCP to Agent Memory, LangCache, and
-Context Retriever. VS Code in the workbench is the IDE.
+Reload `http://127.0.0.1:8080/` after each switch. `sdlc` and `agentic` pre-wire
+Continue to Agent Memory, LangCache, and Context Retriever. `agentic` also
+provisions isolated `kind-agentic` resources and requires `cr.license`. VS Code
+in the workbench is the IDE.
 
 **Insight** — workbench Insight panel, or `http://127.0.0.1:8080/redisinsight/`
 (the app is mounted at `/redisinsight` so the iframe works). All eleven REDBs

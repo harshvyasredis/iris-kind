@@ -5,7 +5,13 @@ from pathlib import Path
 import yaml
 
 from ram_mcp import in_cluster_client
-from workshop import continue_config, load_pack, manifests, workbench_config
+from workshop import (
+    continue_config,
+    load_pack,
+    manifests,
+    resource_state_path,
+    workbench_config,
+)
 
 
 def test_hello_and_sdlc_packs_exist() -> None:
@@ -17,6 +23,11 @@ def test_hello_and_sdlc_packs_exist() -> None:
     assert "ram" in sdlc["requires"]
     assert "langcache" in sdlc["requires"]
     assert agentic["panels"]["app"]["visible"] is True
+    assert agentic["panels"]["terminal"]["visible"] is True
+    assert agentic["env"]["ram"] == "kind-agentic"
+    assert agentic["env"]["langcache"] == "kind-agentic"
+    assert agentic["env"]["context_retriever"] == "kind-agentic"
+    assert "context-retriever" in agentic["requires"]
     assert sdlc["panels"]["vscode"]["visible"] is True
     assert sdlc["panels"]["app"]["visible"] is False
 
@@ -137,3 +148,42 @@ def test_pack_yaml_files_are_readable() -> None:
     )
     for page in expected_pages:
         assert (sdlc_docs / page).is_file()
+
+    agentic_docs = root / "agentic" / "docs"
+    expected_agentic_pages = (
+        "home.md",
+        "setup/setup.md",
+        "tasks/build-1.md",
+        "tasks/build-2.md",
+        "tasks/build-3.md",
+        "tasks/arena.md",
+        "tasks/takeaway.md",
+        "reference/reference.md",
+    )
+    for page in expected_agentic_pages:
+        assert (agentic_docs / page).is_file()
+
+
+def test_named_resource_state_paths_keep_default_compatibility() -> None:
+    assert resource_state_path("ram", "kind-default").name == "ram-default-store.json"
+    assert (
+        resource_state_path("langcache", "kind-agentic").name
+        == "langcache-agentic-cache.json"
+    )
+    assert (
+        resource_state_path("context-retriever", "kind-agentic").name
+        == "context-retriever-agentic-surface.json"
+    )
+
+
+def test_pack_tarball_omits_generated_web_installs() -> None:
+    from workshop import pack_tarball
+    import tarfile
+    import io
+
+    pack = load_pack("agentic")
+    archive = pack_tarball(pack, "name: test\n")
+    names = tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz").getnames()
+    assert "docs/home.md" in names
+    assert "code/web/agent/retrieve.js" in names
+    assert not any("node_modules" in name for name in names)

@@ -1,15 +1,15 @@
 id: agentic
 title: "Build an agentic app on Redis Iris"
-requires: [langcache, ram]
-optional: [context-retriever]
+requires: [langcache, ram, context-retriever]
+optional: []
 panels:
   vscode: { visible: true }
   app: { visible: true }
-  terminal: { visible: false }
+  terminal: { visible: true }
   redisinsight: { visible: true }
 env:
   redis: workshop
-  langcache: kind-default
-  ram: kind-default
-  context_retriever: true
+  langcache: kind-agentic
+  ram: kind-agentic
+  context_retriever: kind-agentic
 codeRoot: code/web

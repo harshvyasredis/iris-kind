@@ -1,0 +1,29 @@
+# Build 1 contract. The live kind-agentic surface contains these entities.
+# Replace TODO with text, tag, key, or stored. Keep retrieve.js consistent.
+entities:
+  Ticket:
+    key: "ticket:{id}"
+    fields:
+      id: key
+      title: TODO
+      body: TODO
+      brand: TODO
+      error_code: TODO
+      status: TODO
+      year: TODO
+      mitigation: TODO
+  Runbook:
+    key: "runbook:{id}"
+    fields:
+      id: key
+      title: TODO
+      error_code: TODO
+      steps: TODO
+  FilterDecision:
+    key: "filter:{id}"
+    fields:
+      id: key
+      error_code: TODO
+      category: TODO
+      reason: TODO
+      remediation: TODO

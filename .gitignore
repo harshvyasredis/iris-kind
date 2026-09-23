@@ -16,3 +16,7 @@ __pycache__/
 
 # pytest
 .pytest_cache/
+
+# Local workshop app installs
+node_modules/
+workshop/packs/*/code/web/dist/

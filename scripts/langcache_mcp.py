@@ -43,6 +43,7 @@ def tools() -> list[dict[str, Any]]:
                 "properties": {
                     "prompt": {"type": "string"},
                     "similarityThreshold": {"type": "number"},
+                    "attributes": {"type": "object"},
                 },
                 "required": ["prompt"],
             },
@@ -55,6 +56,7 @@ def tools() -> list[dict[str, Any]]:
                 "properties": {
                     "prompt": {"type": "string"},
                     "response": {"type": "string"},
+                    "attributes": {"type": "object"},
                 },
                 "required": ["prompt", "response"],
             },
@@ -73,16 +75,21 @@ def call_tool(http: httpx.Client, name: str, arguments: dict[str, Any]) -> Any:
         body: dict[str, Any] = {"prompt": arguments["prompt"]}
         if "similarityThreshold" in arguments:
             body["similarityThreshold"] = arguments["similarityThreshold"]
+        if arguments.get("attributes"):
+            body["attributes"] = arguments["attributes"]
         response = http.post(f"/v1/caches/{cid}/entries/search", json=body)
         response.raise_for_status()
         return response.json()
     if name == "langcache_set":
+        payload: dict[str, Any] = {
+            "prompt": arguments["prompt"],
+            "response": arguments["response"],
+        }
+        if arguments.get("attributes"):
+            payload["attributes"] = arguments["attributes"]
         response = http.post(
             f"/v1/caches/{cid}/entries",
-            json={
-                "prompt": arguments["prompt"],
-                "response": arguments["response"],
-            },
+            json=payload,
         )
         response.raise_for_status()
         return response.json()

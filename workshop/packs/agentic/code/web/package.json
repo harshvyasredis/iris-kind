@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "build": "vite build",
+    "test": "node --test arena/*.test.js"
   },
   "devDependencies": {
     "vite": "^8.0.0"

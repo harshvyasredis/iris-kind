@@ -271,6 +271,7 @@ def manifests(
     vscode_image: str,
     web_image: str,
     code_root: str,
+    node_port: int,
     container_resources: dict[str, dict[str, str]],
 ) -> list[dict[str, Any]]:
     labels = {"app.kubernetes.io/name": "workshop", "iris.kind/pack": pack_id}
@@ -461,8 +462,16 @@ def manifests(
             "kind": "Service",
             "metadata": {"name": "workshop", "namespace": namespace},
             "spec": {
+                "type": "NodePort",
                 "selector": labels,
-                "ports": [{"name": "http", "port": 80, "targetPort": "http"}],
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 80,
+                        "targetPort": "http",
+                        "nodePort": node_port,
+                    }
+                ],
             },
         },
     ]
@@ -575,6 +584,7 @@ def main() -> None:
             vscode_image=versions["workshopVscodeImage"],
             web_image=versions["workshopWebImage"],
             code_root=str(pack.get("codeRoot") or "code/web"),
+            node_port=int(workshop["nodePort"]),
             container_resources=workshop["resources"],
         ),
     ]
@@ -622,11 +632,10 @@ def main() -> None:
         "--timeout=300s",
     )
     host_port = int(workshop.get("hostPort") or 8080)
-    print(
-        f"Workshop pack {pack['id']} is ready. Open with: "
-        f"kubectl -n {namespace} port-forward svc/workshop {host_port}:80"
-    )
-    print(f"then visit http://127.0.0.1:{host_port}")
+    print(f"Workshop pack {pack['id']} is ready on the Docker host port {host_port}.")
+    print(f"  workbench: http://127.0.0.1:{host_port}/")
+    print(f"  insight:   http://127.0.0.1:{host_port}/redisinsight/")
+    print("On a remote/lab VM, use that host's address or reverse-proxy URL for this port.")
 
 
 if __name__ == "__main__":

@@ -112,7 +112,11 @@ insight:
 workshop:
   namespace: workshop
   pack: hello
+  # hostPort is published on the Docker host by kind; nodePort is the Service
+  # port it maps to. Insight is proxied at /redisinsight/, so this one port is
+  # the whole lab surface and no port-forward is needed.
   hostPort: 8080
+  nodePort: 30080
   resources:
     workbench: {cpu: 50m, memory: 64Mi}
     docs: {cpu: 50m, memory: 64Mi}

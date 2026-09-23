@@ -102,7 +102,23 @@ KUBELET_NO_CFS_QUOTA_PATCH = "kind: KubeletConfiguration\ncpuCFSQuota: false\n"
 
 def render_kind(config: dict[str, Any]) -> None:
     kind = config["kind"]
-    nodes: list[dict[str, str]] = [{"role": "control-plane"}]
+    workshop = config["workshop"]
+    nodes: list[dict[str, Any]] = [
+        {
+            "role": "control-plane",
+            # Publish the workbench NodePort on the Docker host so the lab is
+            # reachable without kubectl port-forward. listenAddress 0.0.0.0
+            # covers remote/DinD hosts where the browser is not on loopback.
+            "extraPortMappings": [
+                {
+                    "containerPort": int(workshop["nodePort"]),
+                    "hostPort": int(workshop["hostPort"]),
+                    "listenAddress": "0.0.0.0",
+                    "protocol": "TCP",
+                }
+            ],
+        }
+    ]
     nodes.extend({"role": "worker"} for _ in range(int(kind["workers"]["count"])))
     for node in nodes:
         # Pods with CPU limits fail to start under nested cgroup v1 hosts (e.g.

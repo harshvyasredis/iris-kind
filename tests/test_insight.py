@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from insight import build_pre_setup_databases, env_for_connections
+from insight import build_pre_setup_databases, manifests
 
 
 def test_insight_pre_setup_covers_every_redb() -> None:
@@ -26,7 +26,21 @@ def test_insight_pre_setup_covers_every_redb() -> None:
     assert databases[0]["username"] == "default"
     assert databases[0]["tls"] is False
 
-    env = {item["name"]: item["value"] for item in env_for_connections(connections)}
-    assert env["RI_REDIS_HOST_ram_store"] == "ram-store.rec.svc.cluster.local"
-    assert env["RI_REDIS_ALIAS_ram_jobs"] == "ram-jobs"
-    assert env["RI_REDIS_PASSWORD_ram_store"] == "secret"
+
+def test_insight_registers_each_redb_once() -> None:
+    # RI_REDIS_* env vars are a second preload path: Insight would honour them
+    # alongside the pre-setup file and list every REDB twice.
+    documents = manifests(
+        namespace="rec",
+        image="redis/redisinsight:3.8.0",
+        port=5540,
+        cpu="100m",
+        memory="256Mi",
+        connections_json="[]\n",
+    )
+
+    deployment = next(item for item in documents if item["kind"] == "Deployment")
+    container = deployment["spec"]["template"]["spec"]["containers"][0]
+    names = [item["name"] for item in container["env"]]
+    assert not [name for name in names if name.startswith("RI_REDIS_")]
+    assert "RI_PRE_SETUP_DATABASES_PATH" in names

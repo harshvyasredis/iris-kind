@@ -57,13 +57,23 @@ make logs       # latest per-step logs under logs/latest/
 
 ## 3. Use it
 
-Services are ClusterIP. Port-forward what you need:
+The workbench is published on the Docker host at **port 8080** by Kind itself
+(`workshop.hostPort` maps to the NodePort `workshop.nodePort`), so there is no
+port-forward to run and nothing to keep alive:
+
+- workbench — `http://127.0.0.1:8080/`
+- Insight — `http://127.0.0.1:8080/redisinsight/` (proxied by the workbench)
+
+On a remote or DinD lab VM, substitute that host's address or its reverse-proxy
+URL for `127.0.0.1`.
+
+The remaining services are ClusterIP. Port-forward them only if you need direct
+access:
 
 ```bash
-kubectl -n workshop port-forward svc/workshop 8080:80
-kubectl -n rec port-forward svc/redisinsight 5540:5540
 kubectl -n langcache port-forward svc/langcache 9000:9000
 kubectl -n ram port-forward svc/redis-agent-memory 9001:9000
+kubectl -n rec port-forward svc/redisinsight 5540:5540
 ```
 
 Packs live under `workshop/packs/`. Default is `hello`. Switch without
@@ -77,9 +87,9 @@ make workshop PACK=sdlc
 `sdlc` and `agentic` pre-wire Continue MCP to Agent Memory, LangCache, and
 Context Retriever. VS Code in the workbench is the IDE.
 
-**Insight** — workbench Insight panel, or
-`http://127.0.0.1:5540/redisinsight/` after port-forward (the app is mounted
-at `/redisinsight` so the iframe works).
+**Insight** — workbench Insight panel, or `http://127.0.0.1:8080/redisinsight/`
+(the app is mounted at `/redisinsight` so the iframe works). All eleven REDBs
+are preconfigured from a mounted Secret.
 
 **LangCache** — Bearer token and cache id in `.state/langcache-default-cache.json`
 (mode 0600).

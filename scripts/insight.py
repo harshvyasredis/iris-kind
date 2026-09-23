@@ -53,25 +53,6 @@ def checksum(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()[:16]
 
 
-def env_for_connections(connections: dict[str, dict[str, str]]) -> list[dict[str, str]]:
-    # Env vars are the documented multi-database preload. Unique ids are the
-    # REDB names so a recreate replaces the same aliases instead of duplicating.
-    env: list[dict[str, str]] = []
-    for name, conn in connections.items():
-        suffix = name.replace("-", "_")
-        env.extend(
-            [
-                {"name": f"RI_REDIS_HOST_{suffix}", "value": conn["host"]},
-                {"name": f"RI_REDIS_PORT_{suffix}", "value": str(conn["port"])},
-                {"name": f"RI_REDIS_ALIAS_{suffix}", "value": name},
-                {"name": f"RI_REDIS_USERNAME_{suffix}", "value": "default"},
-                {"name": f"RI_REDIS_PASSWORD_{suffix}", "value": conn["password"]},
-                {"name": f"RI_REDIS_TLS_{suffix}", "value": "false"},
-            ]
-        )
-    return env
-
-
 def manifests(
     *,
     namespace: str,
@@ -80,7 +61,6 @@ def manifests(
     cpu: str,
     memory: str,
     connections_json: str,
-    connections: dict[str, dict[str, str]],
 ) -> list[dict[str, Any]]:
     resources = {
         "requests": {"cpu": cpu, "memory": memory},
@@ -131,7 +111,6 @@ def manifests(
                                         "name": "RI_PROXY_PATH",
                                         "value": "/redisinsight",
                                     },
-                                    *env_for_connections(connections),
                                 ],
                                 "resources": resources,
                                 "volumeMounts": [
@@ -220,7 +199,6 @@ def main() -> None:
         cpu=resources["cpu"],
         memory=resources["memory"],
         connections_json=connections_json,
-        connections=connections,
     )
     run(
         "kubectl",

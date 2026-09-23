@@ -1,8 +1,7 @@
 # Iris Kind lab
 
-A local Kind cluster that runs Redis Enterprise plus the public Redis Iris
-charts (LangCache, Agent Memory, Redis Insight). It does not use Docker
-Compose, Docker Desktop Kubernetes, or OSS Redis Stack.
+Kind cluster that runs Redis Enterprise plus the public Redis Iris
+charts (LangCache, Agent Memory, Redis Insight).
 
 ## Prerequisites
 
@@ -34,10 +33,6 @@ Gitignored. Copy real contents, not the `*.example` files.
 | `openai.key` | embeddings, extraction, LangCache search |
 | `cr.license` | Context Retriever (optional; skipped if missing) |
 
-A bad Redis Enterprise license does not fail Helm. The cluster falls back to a
-4-shard trial and databases stay `pending`. `make rec` checks that the operator
-accepted the license before continuing.
-
 ## 2. Bring it up
 
 ```bash
@@ -50,13 +45,10 @@ make status
 ```
 
 `make all` creates Kind, the operator, a 3-node REC, eleven REDBs, LangCache,
-Agent Memory, Context Retriever (when `cr.license` is present), default
+Agent Memory, Context Retriever, default
 cache/store/surface `kind-default`, Redis Insight, and the workshop workbench
 (`hello` pack). First run is several minutes. A second `make all` is a no-op
 unless inputs changed.
-
-Playbook is not installed (no public chart yet). Its two databases are created
-anyway.
 
 ```bash
 make destroy    # delete the Kind cluster, stamps, and .state keys
@@ -74,11 +66,6 @@ kubectl -n langcache port-forward svc/langcache 9000:9000
 kubectl -n ram port-forward svc/redis-agent-memory 9001:9000
 ```
 
-The workbench chrome is adapted from
-[redis-developer/workshop-docker-template](https://github.com/redis-developer/workshop-docker-template)
-(docs, VS Code, app, terminal, path-based nginx). Redis is Enterprise on this
-Kind cluster; Insight is the instance already in `rec`.
-
 Packs live under `workshop/packs/`. Default is `hello`. Switch without
 rebuilding Kind:
 
@@ -88,8 +75,7 @@ make workshop PACK=sdlc
 ```
 
 `sdlc` and `agentic` pre-wire Continue MCP to Agent Memory, LangCache, and
-Context Retriever (if `cr.license` is present). VS Code in the workbench is
-the IDE.
+Context Retriever. VS Code in the workbench is the IDE.
 
 **Insight** — workbench Insight panel, or
 `http://127.0.0.1:5540/redisinsight/` after port-forward (the app is mounted

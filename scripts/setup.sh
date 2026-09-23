@@ -87,13 +87,20 @@ install_uv() {
     echo "uv already installed: $(command -v uv)"
     return 0
   fi
-  echo "installing uv"
+  echo "installing uv into ${bin_dir}"
+  # Official installer defaults to $HOME/.local/bin (root's home under sudo),
+  # which is not on PATH for `sudo make validate`. Put it next to helm/kind.
+  local env_prefix=(
+    "UV_INSTALL_DIR=${bin_dir}"
+    "UV_UNMANAGED_INSTALL=${bin_dir}"
+    "UV_NO_MODIFY_PATH=1"
+  )
   if have curl; then
-    curl -LsSf https://astral.sh/uv/install.sh | sh
+    curl -LsSf https://astral.sh/uv/install.sh | env "${env_prefix[@]}" sh
   else
-    wget -qO- https://astral.sh/uv/install.sh | sh
+    wget -qO- https://astral.sh/uv/install.sh | env "${env_prefix[@]}" sh
   fi
-  export PATH="${HOME}/.local/bin:${PATH}"
+  export PATH="${bin_dir}:${PATH}"
 }
 
 install_helm() {

@@ -66,7 +66,7 @@ GENERATED_FILES := $(GENERATED)/kind.yaml $(GENERATED)/operator-values.yaml \
 help: ## Show available targets.
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-setup: ## Install curl, git, jq, yq, uv, helm, kubectl, and kind (macOS / Ubuntu 20.04+).
+setup: ## Install curl, git, jq, yq, uv, helm, kubectl, kind, and vim (macOS / Ubuntu 20.04+).
 	@bash $(ROOT)/scripts/setup.sh
 
 # ---------------------------------------------------------------------------

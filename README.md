@@ -7,7 +7,11 @@ charts (LangCache, Agent Memory, Redis Insight).
 
 - Docker Desktop **engine** running, **Kubernetes disabled** (or Docker Engine on Ubuntu)
 - At least **25 GiB RAM** for Docker (three 6 GiB workers + 2 GiB control plane; REC wants 4 GiB RAM / 2 CPU per node)
-- `make` (on Ubuntu: `sudo apt-get install -y make`)
+- `make` — on a fresh Ubuntu / Docker-in-Docker VM the apt index is empty, so:
+  ```bash
+  sudo apt-get update
+  sudo apt-get install -y make
+  ```
 - Licenses and an OpenAI key (see below)
 
 Install the rest of the CLI tools with:
@@ -16,7 +20,7 @@ Install the rest of the CLI tools with:
 make setup
 ```
 
-That installs `curl`, `git`, `jq`, mikefarah `yq`, `uv`, Helm 3, `kubectl`, and `kind` on macOS (Homebrew) and Ubuntu 20.04+. Docker is not installed; start the engine yourself. You can also run `bash scripts/setup.sh` if `make` is not on PATH yet.
+That installs `curl`, `git`, `jq`, mikefarah `yq`, `uv`, Helm 3, `kubectl`, `kind`, and `vim` on macOS (Homebrew) and Ubuntu 20.04+. Docker is not installed; start the engine yourself. You can also run `bash scripts/setup.sh` if `make` is not on PATH yet.
 
 Python 3.12.12 is pinned (`.python-version` and `requires-python`) and installed
 by `uv`. Every `make` script runs through `uv run` and the committed `uv.lock`.
@@ -38,6 +42,7 @@ Gitignored. Copy real contents, not the `*.example` files.
 ```bash
 git clone git@github.com:harshvyasredis/iris-kind.git
 cd iris-kind
+# Ubuntu / DinD: sudo apt-get update && sudo apt-get install -y make
 make setup
 make validate
 make all

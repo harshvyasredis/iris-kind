@@ -165,7 +165,7 @@ setup_macos() {
     exit 1
   fi
   brew update
-  brew install curl git jq yq kind kubernetes-cli helm
+  brew install curl git jq vim yq kind kubernetes-cli helm
   if ! have uv; then
     brew install uv || install_uv
   fi
@@ -176,7 +176,7 @@ setup_linux() {
     echo "this setup script supports apt-based Linux (Ubuntu 20.04+)." >&2
     exit 1
   fi
-  apt_install ca-certificates curl git jq make
+  apt_install ca-certificates curl git jq make vim
   install_uv
   install_helm
   install_kubectl
@@ -198,7 +198,7 @@ export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
 
 echo
 echo "installed:"
-for tool in curl git jq yq uv helm kubectl kind make; do
+for tool in curl git jq yq uv helm kubectl kind make vim; do
   if have "${tool}"; then
     printf '  %-8s %s\n' "${tool}" "$(command -v "${tool}")"
   else

@@ -11,8 +11,8 @@ Compose, Docker Desktop Kubernetes, or OSS Redis Stack.
 - `kind`, `kubectl`, Helm 3, `make`, `yq`, `uv`
 - Licenses and an OpenAI key (see below)
 
-Python 3.12+ is installed by `uv`. Every `make` script runs through `uv run`
-and the committed `uv.lock`.
+Python 3.12.12 is pinned (`.python-version` and `requires-python`) and installed
+by `uv`. Every `make` script runs through `uv run` and the committed `uv.lock`.
 
 ## 1. Drop secrets next to this README
 

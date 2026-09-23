@@ -17,7 +17,7 @@ charts (LangCache, Agent Memory, Redis Insight).
 Install the rest of the CLI tools with:
 
 ```bash
-make setup
+sudo env DOCKER_API_VERSION=1.43 make setup
 ```
 
 That installs `curl`, `git`, `jq`, mikefarah `yq`, `uv`, Helm 3, `kubectl`, `kind`, and `vim` on macOS (Homebrew) and Ubuntu 20.04+. Docker is not installed; start the engine yourself. You can also run `bash scripts/setup.sh` if `make` is not on PATH yet.
@@ -47,10 +47,10 @@ Gitignored. Copy real contents, not the `*.example` files.
 sudo apt-get update && sudo apt-get install -y make # Ubuntu Only
 git clone https://github.com/harshvyasredis/iris-kind.git
 cd iris-kind
-make setup
-make validate
-make all
-make status
+sudo env DOCKER_API_VERSION=1.43 make setup
+sudo env DOCKER_API_VERSION=1.43 make validate
+sudo env DOCKER_API_VERSION=1.43 make all
+sudo env DOCKER_API_VERSION=1.43 make status
 ```
 
 `make all` creates Kind, the operator, a 3-node REC, eleven REDBs, LangCache,
@@ -60,8 +60,8 @@ cache/store/surface `kind-default`, Redis Insight, and the workshop workbench
 unless inputs changed.
 
 ```bash
-make destroy    # delete the Kind cluster, stamps, and .state keys
-make logs       # latest per-step logs under logs/latest/
+sudo env DOCKER_API_VERSION=1.43 make destroy    # delete the Kind cluster, stamps, and .state keys
+sudo env DOCKER_API_VERSION=1.43 make logs       # latest per-step logs under logs/latest/
 ```
 
 
@@ -94,11 +94,11 @@ workbench stamp is not treated as already done:
 
 ```bash
 # 1. ~15-minute SDLC lab (Continue + Iris MCP)
-make redo STEP=workshop
+sudo env DOCKER_API_VERSION=1.43 make redo STEP=workshop
 sudo env DOCKER_API_VERSION=1.43 make workshop PACK=sdlc
 
 # 2. 90-minute agentic lab (App panel coding arena)
-make redo STEP=workshop
+sudo env DOCKER_API_VERSION=1.43 make redo STEP=workshop
 sudo env DOCKER_API_VERSION=1.43 make workshop PACK=agentic
 ```
 

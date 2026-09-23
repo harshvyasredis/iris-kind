@@ -29,20 +29,24 @@ by `uv`. Every `make` script runs through `uv run` and the committed `uv.lock`.
 
 Gitignored. Copy real contents, not the `*.example` files.
 
-| File | Required for |
-|---|---|
-| `redisenterprise.license` | Redis Enterprise cluster (10 shards) |
-| `ram.license` | Agent Memory |
-| `langcache.license` | LangCache |
-| `openai.key` | embeddings, extraction, LangCache search |
-| `cr.license` | Context Retriever (optional; skipped if missing) |
+
+| File                      | Required for                                     |
+| ------------------------- | ------------------------------------------------ |
+| `redisenterprise.license` | Redis Enterprise cluster (10 shards)             |
+| `ram.license`             | Agent Memory                                     |
+| `langcache.license`       | LangCache                                        |
+| `openai.key`              | embeddings, extraction, LangCache search         |
+| `cr.license`              | Context Retriever (optional; skipped if missing) |
+
+
+
 
 ## 2. Bring it up
 
 ```bash
-git clone git@github.com:harshvyasredis/iris-kind.git
+sudo apt-get update && sudo apt-get install -y make # Ubuntu Only
+git clone https://github.com/harshvyasredis/iris-kind.git
 cd iris-kind
-# Ubuntu / DinD: sudo apt-get update && sudo apt-get install -y make
 make setup
 make validate
 make all
@@ -59,6 +63,8 @@ unless inputs changed.
 make destroy    # delete the Kind cluster, stamps, and .state keys
 make logs       # latest per-step logs under logs/latest/
 ```
+
+
 
 ## 3. Use it
 

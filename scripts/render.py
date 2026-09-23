@@ -97,14 +97,27 @@ def validate(config: dict[str, Any]) -> None:
             )
 
 
+KUBELET_NO_CFS_QUOTA_PATCH = "kind: KubeletConfiguration\ncpuCFSQuota: false\n"
+
+
 def render_kind(config: dict[str, Any]) -> None:
     kind = config["kind"]
     nodes: list[dict[str, str]] = [{"role": "control-plane"}]
     nodes.extend({"role": "worker"} for _ in range(int(kind["workers"]["count"])))
+    for node in nodes:
+        # Pods with CPU limits fail to start under nested cgroup v1 hosts (e.g.
+        # Docker-in-Docker labs): runc can't write cpu.cfs_quota_us in the
+        # nested hierarchy ("invalid argument"). Disable CFS quota enforcement
+        # so kubelet stops trying to set it.
+        node["kubeadmConfigPatches"] = [KUBELET_NO_CFS_QUOTA_PATCH]
     manifest: dict[str, Any] = {
         "kind": "Cluster",
         "apiVersion": "kind.x-k8s.io/v1alpha4",
         "name": kind["name"],
+        # Bind the API server on all interfaces, not just the Docker host's
+        # loopback, so it's reachable when kind runs inside a container whose
+        # network namespace differs from the Docker daemon's (e.g. DinD labs).
+        "networking": {"apiServerAddress": "0.0.0.0"},
         "nodes": nodes,
     }
     if kind.get("nodeImage"):

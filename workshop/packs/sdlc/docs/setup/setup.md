@@ -1,11 +1,19 @@
-# Continue and MCP
+# Two-minute setup
 
-1. In the workbench, show the **Code** panel (VS Code).
-2. Open the Continue chat view.
-3. Ask: `List your MCP tools.`
+1. Show the **Code** panel and open the **Continue** icon in VS Code.
+2. Select model **gpt-4o**.
+3. For the baseline exercise select **Chat** mode.
+4. For the Iris exercise select **Agent** mode so tools are available.
 
-You should see Agent Memory and LangCache tools. Context Retriever appears
-only when that chart was installed.
+In Agent mode, ask:
 
-The assistant model uses `OPENAI_API_KEY` from the Kind lab. MCP servers
-talk to Iris over in-cluster DNS; you do not port-forward from this VS Code.
+> List your MCP tools. Group them by Agent Memory, LangCache, and Context
+> Retriever.
+
+You should see all three groups. If Continue asks to run a tool, review its
+name and arguments, then choose **Accept**.
+
+Credentials and in-cluster endpoints are already configured. Ignore the
+provider setup card if it remains visible; do not paste an API key.
+
+[Begin the baseline exercise →](/tasks/baseline.md)

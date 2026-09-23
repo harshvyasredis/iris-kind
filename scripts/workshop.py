@@ -90,6 +90,10 @@ def continue_config(
                 "name": "redis-agent-memory",
                 "command": "python3",
                 "args": [f"{MCP_DIR}/ram_mcp.py"],
+                "env": {
+                    "RAM_URL": "${{ secrets.RAM_URL }}",
+                    "RAM_STORE_ID": "${{ secrets.RAM_STORE_ID }}",
+                },
             }
         )
     if include_langcache:
@@ -98,6 +102,11 @@ def continue_config(
                 "name": "langcache",
                 "command": "python3",
                 "args": [f"{MCP_DIR}/langcache_mcp.py"],
+                "env": {
+                    "LC_URL": "${{ secrets.LC_URL }}",
+                    "LC_TOKEN": "${{ secrets.LC_TOKEN }}",
+                    "LC_CACHE_ID": "${{ secrets.LC_CACHE_ID }}",
+                },
             }
         )
     if include_cr:
@@ -106,6 +115,11 @@ def continue_config(
                 "name": "context-retriever",
                 "command": "python3",
                 "args": [f"{MCP_DIR}/cr_mcp.py"],
+                "env": {
+                    "CR_MCP_URL": "${{ secrets.CR_MCP_URL }}",
+                    "CR_MCP_PATH": "${{ secrets.CR_MCP_PATH }}",
+                    "CR_AGENT_KEY": "${{ secrets.CR_AGENT_KEY }}",
+                },
             }
         )
     document = {
@@ -117,6 +131,7 @@ def continue_config(
                 "name": model,
                 "provider": "openai",
                 "model": model,
+                "apiKey": "${{ secrets.OPENAI_API_KEY }}",
             }
         ],
         "mcpServers": servers,
@@ -274,7 +289,8 @@ def manifests(
     node_port: int,
     container_resources: dict[str, dict[str, str]],
 ) -> list[dict[str, Any]]:
-    labels = {"app.kubernetes.io/name": "workshop", "iris.kind/pack": pack_id}
+    selector_labels = {"app.kubernetes.io/name": "workshop"}
+    pod_labels = {**selector_labels, "iris.kind/pack": pack_id}
     workbench_res = resources(container_resources["workbench"])
     docs_res = resources(container_resources["docs"])
     vscode_res = resources(container_resources["vscode"])
@@ -285,11 +301,23 @@ def manifests(
         "MARKER=/work/.pack-checksum\n"
         'if [ -f "$MARKER" ] && [ "$(cat "$MARKER")" = "$WANT" ]; then\n'
         '  echo "workshop pack already seeded"\n'
-        "  exit 0\n"
+        "else\n"
+        "  find /work -mindepth 1 -maxdepth 1 ! -name lost+found -exec rm -rf {} +\n"
+        "  tar -xzf /seed/pack.tar.gz -C /work\n"
+        '  echo "$WANT" > "$MARKER"\n'
         "fi\n"
-        "find /work -mindepth 1 -maxdepth 1 ! -name lost+found -exec rm -rf {} +\n"
-        "tar -xzf /seed/pack.tar.gz -C /work\n"
-        'echo "$WANT" > "$MARKER"\n'
+        "chown -R 1000:1000 /work\n"
+        "install -d -o 1000 -g 1000 /continue\n"
+        "install -o 1000 -g 1000 -m 0644 /work/.continue/config.yaml "
+        "/continue/config.yaml\n"
+        "umask 077\n"
+        ": > /continue/.env\n"
+        "for name in OPENAI_API_KEY RAM_URL RAM_STORE_ID LC_URL LC_TOKEN "
+        "LC_CACHE_ID CR_MCP_URL CR_MCP_PATH CR_AGENT_KEY; do\n"
+        '  eval "value=\\${$name:-}"\n'
+        '  [ -z "$value" ] || printf "%s=%s\\n" "$name" "$value" >> /continue/.env\n'
+        "done\n"
+        "chown 1000:1000 /continue/.env\n"
     )
     return [
         {
@@ -312,11 +340,11 @@ def manifests(
             "metadata": {"name": "workshop", "namespace": namespace},
             "spec": {
                 "replicas": 1,
-                "selector": {"matchLabels": labels},
+                "selector": {"matchLabels": selector_labels},
                 "strategy": {"type": "Recreate"},
                 "template": {
                     "metadata": {
-                        "labels": labels,
+                        "labels": pod_labels,
                         "annotations": {"iris.kind/pack-checksum": pack_checksum},
                     },
                     "spec": {
@@ -327,9 +355,11 @@ def manifests(
                                 "image": web_image,
                                 "imagePullPolicy": "IfNotPresent",
                                 "command": ["bash", "-c", seed],
+                                "envFrom": [{"secretRef": {"name": "workshop-env"}}],
                                 "volumeMounts": [
                                     {"name": "work", "mountPath": "/work"},
                                     {"name": "seed", "mountPath": "/seed"},
+                                    {"name": "continue", "mountPath": "/continue"},
                                 ],
                             }
                         ],
@@ -416,7 +446,11 @@ def manifests(
                                     {
                                         "name": "work",
                                         "mountPath": "/home/coder/code",
-                                    }
+                                    },
+                                    {
+                                        "name": "continue",
+                                        "mountPath": "/home/coder/.continue",
+                                    },
                                 ],
                             },
                             {
@@ -452,6 +486,7 @@ def manifests(
                                 "configMap": {"name": "workshop-docs-nginx"},
                             },
                             {"name": "seed", "configMap": {"name": "workshop-pack"}},
+                            {"name": "continue", "emptyDir": {}},
                         ],
                     },
                 },
@@ -463,7 +498,7 @@ def manifests(
             "metadata": {"name": "workshop", "namespace": namespace},
             "spec": {
                 "type": "NodePort",
-                "selector": labels,
+                "selector": selector_labels,
                 "ports": [
                     {
                         "name": "http",

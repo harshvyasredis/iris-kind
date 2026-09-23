@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 
 from ram_mcp import in_cluster_client
-from workshop import continue_config, load_pack, workbench_config
+from workshop import continue_config, load_pack, manifests, workbench_config
 
 
 def test_hello_and_sdlc_packs_exist() -> None:
@@ -33,6 +33,16 @@ def test_continue_config_lists_iris_mcp_servers() -> None:
     names = [item["name"] for item in parsed["mcpServers"]]
     assert names == ["redis-agent-memory", "langcache", "context-retriever"]
     assert parsed["models"][0]["model"] == "gpt-4o"
+    assert parsed["models"][0]["apiKey"] == "${{ secrets.OPENAI_API_KEY }}"
+    assert parsed["mcpServers"][0]["env"] == {
+        "RAM_URL": "${{ secrets.RAM_URL }}",
+        "RAM_STORE_ID": "${{ secrets.RAM_STORE_ID }}",
+    }
+    assert parsed["mcpServers"][1]["env"]["LC_TOKEN"] == "${{ secrets.LC_TOKEN }}"
+    assert (
+        parsed["mcpServers"][2]["env"]["CR_AGENT_KEY"]
+        == "${{ secrets.CR_AGENT_KEY }}"
+    )
 
 
 def test_workbench_config_hides_app_for_sdlc() -> None:
@@ -40,6 +50,65 @@ def test_workbench_config_hides_app_for_sdlc() -> None:
     assert "Iris Kind" not in js or True
     assert '"id": "app"' in js
     assert '"visible": false' in js.lower() or '"visible": false' in js
+
+
+def test_pack_name_is_not_part_of_immutable_selectors() -> None:
+    documents = manifests(
+        namespace="workshop",
+        pack_id="sdlc",
+        pack_checksum="checksum",
+        nginx_image="nginx",
+        vscode_image="vscode",
+        web_image="web",
+        code_root="code",
+        node_port=30080,
+        container_resources={
+            name: {"cpu": "1m", "memory": "1Mi"}
+            for name in ("workbench", "docs", "vscode", "web")
+        },
+    )
+    deployment = next(item for item in documents if item["kind"] == "Deployment")
+    service = next(item for item in documents if item["kind"] == "Service")
+    selector = {"app.kubernetes.io/name": "workshop"}
+
+    assert deployment["spec"]["selector"]["matchLabels"] == selector
+    assert service["spec"]["selector"] == selector
+    assert (
+        deployment["spec"]["template"]["metadata"]["labels"]["iris.kind/pack"]
+        == "sdlc"
+    )
+
+
+def test_continue_config_is_mounted_in_active_user_directory() -> None:
+    documents = manifests(
+        namespace="workshop",
+        pack_id="sdlc",
+        pack_checksum="checksum",
+        nginx_image="nginx",
+        vscode_image="vscode",
+        web_image="web",
+        code_root="code",
+        node_port=30080,
+        container_resources={
+            name: {"cpu": "1m", "memory": "1Mi"}
+            for name in ("workbench", "docs", "vscode", "web")
+        },
+    )
+    deployment = next(item for item in documents if item["kind"] == "Deployment")
+    pod = deployment["spec"]["template"]["spec"]
+    vscode = next(item for item in pod["containers"] if item["name"] == "vscode")
+
+    assert {
+        "name": "continue",
+        "mountPath": "/home/coder/.continue",
+    } in vscode["volumeMounts"]
+    assert {"name": "continue", "emptyDir": {}} in pod["volumes"]
+    assert "/continue/config.yaml" in pod["initContainers"][0]["command"][-1]
+    assert "/continue/.env" in pod["initContainers"][0]["command"][-1]
+    assert "chown -R 1000:1000 /work" in pod["initContainers"][0]["command"][-1]
+    assert pod["initContainers"][0]["envFrom"] == [
+        {"secretRef": {"name": "workshop-env"}}
+    ]
 
 
 def test_in_cluster_ram_mcp_uses_env(monkeypatch) -> None:
@@ -56,4 +125,15 @@ def test_in_cluster_ram_mcp_uses_env(monkeypatch) -> None:
 def test_pack_yaml_files_are_readable() -> None:
     root = Path(__file__).resolve().parents[1] / "workshop" / "packs"
     assert (root / "hello" / "docs" / "home.md").is_file()
-    assert (root / "sdlc" / "docs" / "setup" / "setup.md").is_file()
+    sdlc_docs = root / "sdlc" / "docs"
+    expected_pages = (
+        "home.md",
+        "setup/setup.md",
+        "tasks/baseline.md",
+        "tasks/iris-workflow.md",
+        "tasks/redis-insight.md",
+        "tasks/takeaway.md",
+        "reference/reference.md",
+    )
+    for page in expected_pages:
+        assert (sdlc_docs / page).is_file()

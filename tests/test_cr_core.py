@@ -4,12 +4,19 @@ import uuid
 
 from cr_api import (
     CRDeployment,
+    SEED_TICKETS,
     create_surface,
     default_data_model,
     delete_surface,
     get_surface,
     list_surfaces,
 )
+
+
+def test_seed_data_includes_messaging_gateway_incident() -> None:
+    ticket = next(item for item in SEED_TICKETS if item["id"] == "MSG-204")
+    assert "downstream timeout" in ticket["title"].lower()
+    assert "idempotency" in ticket["body"].lower()
 
 
 def test_cr_health_and_auth(cr: CRDeployment) -> None:

@@ -92,6 +92,10 @@ div#app:empty:before {
   content: "Loading...";
 }
 
+body.ready #app {
+  display: none;
+}
+
 /* Progress bar */
 .progress {
   background-color: var(--color-redis-hyper);
@@ -659,48 +663,36 @@ li input[type=checkbox] {
   padding: 1rem;
 }
 
-/* Mobile responsive */
-@media screen and (max-width: 768px) {
+/* Workshop pane is a narrow iframe; keep nav stacked, not overlaid. */
+@media screen and (max-width: 900px) {
   .sidebar {
-    left: -300px;
-    transition: transform 0.25s ease-out;
+    position: relative;
+    width: 100%;
+    left: 0;
+    transform: none !important;
+    height: auto;
+    padding: 12px 0 8px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-redis-dusk-70);
   }
 
   .content {
-    left: 0;
-    max-width: 100vw;
-    position: static;
-    padding-top: 20px;
-    transition: transform 0.25s ease;
+    position: relative;
+    left: 0 !important;
+    transform: none !important;
+    max-width: 100%;
+    padding-top: 8px;
   }
 
   .sidebar-toggle {
-    background-color: transparent;
-    width: auto;
-    padding: 30px 30px 10px 10px;
-  }
-
-  body.close .sidebar {
-    transform: translateX(300px);
-  }
-
-  body.close .sidebar-toggle {
-    background-color: var(--color-redis-dusk);
-    transition: background-color 1s;
-    width: 284px;
-    padding: 10px;
-  }
-
-  body.close .content {
-    transform: translateX(300px);
+    display: none;
   }
 
   .app-nav {
-    margin-top: 16px;
-  }
-
-  .sidebar-toggle {
-    position: fixed;
+    position: static;
+    text-align: left;
+    margin: 8px 12px 0;
+    padding-bottom: 0;
   }
 }
 
@@ -872,10 +864,10 @@ code .token {
 section.cover {
   position: relative;
   align-items: center;
-  background-color: var(--color-redis-midnight);
-  background-position: 50%;
-  background-repeat: no-repeat;
-  background-size: cover;
+  /* Docsify injects a pastel gradient as an inline style; force Redis midnight. */
+  background: var(--color-redis-midnight) !important;
+  background-image: none !important;
+  background-color: var(--color-redis-midnight) !important;
   min-height: 100vh;
   width: 100%;
   display: none;
@@ -913,7 +905,7 @@ section.cover p {
 }
 
 section.cover h1 {
-  color: inherit;
+  color: var(--color-redis-white) !important;
   font-size: 2.5rem;
   font-weight: 300;
   margin: 0.625rem 0 2.5rem;

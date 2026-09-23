@@ -1,11 +1,16 @@
-# Iris in the developer SDLC
+# Messaging gateway SDLC: with and without Iris
 
-This pack is a skeleton for workshops where **the IDE is the workbench
-VS Code panel**. Open Continue in that VS Code. It is already wired to:
+You are supporting a fictional carrier messaging gateway. A downstream submit
+timed out and customers received duplicate messages.
 
-- Agent Memory MCP (store `kind-default`)
-- LangCache MCP (cache `kind-default`)
-- Context Retriever MCP when `cr.license` is present
+In about 15 minutes you will:
 
-There is no local Cursor on a laptop. Ask Continue to list its tools, then
-use memory, cache, and retrieval while you edit files in this workspace.
+1. Feel the normal coding-assistant experience: plausible advice, no incident
+   history, and no memory after you start a new chat.
+2. Repeat the same job with Context Retriever, Agent Memory, and LangCache.
+3. Open Redis Insight and see where each product stored its data.
+
+The scenario is representative, not Verizon production data or architecture.
+Work only in the browser workbench; no local IDE or port-forward is required.
+
+[Start with the baseline experience →](/tasks/baseline.md)

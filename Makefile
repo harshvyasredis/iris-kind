@@ -240,9 +240,8 @@ $(STAMPS)/workshop: $(STAMPS)/insight $(STAMPS)/langcache-cache $(STAMPS)/ram-st
 	@touch $@
 
 workshop: $(STAMPS)/workshop ## Install the workbench for workshop.pack (override with PACK=sdlc).
-	@echo "Open the workbench:"
-	@echo "  kubectl -n $(WORKSHOP_NAMESPACE) port-forward --address 0.0.0.0 svc/workshop $(WORKSHOP_HOST_PORT):80"
-	@echo "  then visit http://127.0.0.1:$(WORKSHOP_HOST_PORT)"
+	@echo "Open the workbench (no port-forward):"
+	@echo "  http://127.0.0.1:$(WORKSHOP_HOST_PORT)/"
 	@echo "  (on a remote/lab VM behind a reverse proxy, use that proxy's URL for this port/host instead of 127.0.0.1)"
 	@echo "VS Code in the workbench is the participant IDE (Continue + Iris MCP)."
 	@echo "Switch packs with: make redo STEP=workshop && make workshop PACK=sdlc"

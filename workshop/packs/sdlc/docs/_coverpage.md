@@ -1,3 +1,5 @@
-# Cover
+# Messaging gateway SDLC
 
-> Iris Kind workshop
+> Feel the context gap. Then close it with Redis Iris.
+
+[Start the 15-minute workshop](/home.md)

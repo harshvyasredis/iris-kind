@@ -51,6 +51,16 @@ SEED_TICKETS = [
         "status": "closed",
         "body": "Set RI_PROXY_PATH=/redisinsight and probe /redisinsight/api/health/.",
     },
+    {
+        "id": "MSG-204",
+        "title": "Duplicate outbound messages after downstream timeout",
+        "status": "closed",
+        "body": (
+            "The messaging gateway retried a timed-out downstream submit with a new "
+            "transaction id, so the carrier accepted both sends. Reuse the stable "
+            "message id as the idempotency key and check delivery status before retrying."
+        ),
+    },
 ]
 
 

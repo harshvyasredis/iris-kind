@@ -241,8 +241,9 @@ $(STAMPS)/workshop: $(STAMPS)/insight $(STAMPS)/langcache-cache $(STAMPS)/ram-st
 
 workshop: $(STAMPS)/workshop ## Install the workbench for workshop.pack (override with PACK=sdlc).
 	@echo "Open the workbench:"
-	@echo "  kubectl -n $(WORKSHOP_NAMESPACE) port-forward svc/workshop $(WORKSHOP_HOST_PORT):80"
+	@echo "  kubectl -n $(WORKSHOP_NAMESPACE) port-forward --address 0.0.0.0 svc/workshop $(WORKSHOP_HOST_PORT):80"
 	@echo "  then visit http://127.0.0.1:$(WORKSHOP_HOST_PORT)"
+	@echo "  (on a remote/lab VM behind a reverse proxy, use that proxy's URL for this port/host instead of 127.0.0.1)"
 	@echo "VS Code in the workbench is the participant IDE (Continue + Iris MCP)."
 	@echo "Switch packs with: make redo STEP=workshop && make workshop PACK=sdlc"
 
@@ -260,8 +261,9 @@ databases: $(STAMPS)/databases ## Create the dedicated REDBs and wait until Acti
 secrets: $(STAMPS)/secrets ## Materialize Redis URLs and product license/provider Secrets.
 insight: $(STAMPS)/insight ## Install Redis Insight with every REDB preconfigured.
 	@echo "Open Redis Insight:"
-	@echo "  kubectl -n $(INSIGHT_NAMESPACE) port-forward svc/redisinsight $(INSIGHT_PORT):$(INSIGHT_PORT)"
+	@echo "  kubectl -n $(INSIGHT_NAMESPACE) port-forward --address 0.0.0.0 svc/redisinsight $(INSIGHT_PORT):$(INSIGHT_PORT)"
 	@echo "  then visit http://127.0.0.1:$(INSIGHT_PORT)/redisinsight/"
+	@echo "  (on a remote/lab VM behind a reverse proxy, use that proxy's URL for this port/host instead of 127.0.0.1)"
 ram-store: $(STAMPS)/ram-store ## Provision the default Agent Memory store and MCP URL.
 langcache-cache: $(STAMPS)/langcache-cache ## Provision the default LangCache cache and API key.
 cr-surface: $(STAMPS)/cr-surface ## Provision the default Context Retriever surface, seed data, and agent key.

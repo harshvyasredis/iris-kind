@@ -280,8 +280,8 @@ def main() -> None:
         )
         write_private_yaml(cr_values_path, cr_values)
 
-        # Keep the data endpoint private but available for later Admin API
-        # registration; the Context Retriever chart itself only consumes metadata.
+        # Keep the data endpoint private for Admin API surface registration;
+        # the Context Retriever chart itself only consumes metadata Redis.
         write_private_yaml(
             GENERATED / "overlays" / "context-retriever-data.yaml",
             {"url": connections["cr-data"]["url"]},

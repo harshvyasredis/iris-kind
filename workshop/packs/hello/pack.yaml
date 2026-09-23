@@ -1,0 +1,12 @@
+id: hello
+title: "Iris Kind workbench"
+requires: []
+optional: []
+panels:
+  vscode: { visible: true }
+  app: { visible: true }
+  terminal: { visible: false }
+  redisinsight: { visible: false }
+env:
+  redis: workshop
+codeRoot: code/web

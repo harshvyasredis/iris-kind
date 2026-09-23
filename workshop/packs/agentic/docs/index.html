@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Workshop Documentation</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Workshop instructions and documentation">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="assets/lib/themes/redis.css">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs'
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        primaryColor: '#163341',
+        primaryTextColor: '#ffffff',
+        primaryBorderColor: '#5c707a',
+        lineColor: '#5c707a',
+        secondaryColor: '#2d4754',
+        tertiaryColor: '#091a23',
+        background: 'transparent',
+        mainBkg: '#163341',
+        nodeBorder: '#5c707a',
+        clusterBkg: '#091a23',
+        edgeLabelBackground: '#091a23',
+        fontFamily: 'Space Grotesk, sans-serif'
+      }
+    })
+    window.mermaid = mermaid
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      name: 'Workshop Docs',
+      repo: '',
+      loadSidebar: true,
+      loadNavbar: true,
+      coverpage: true,
+      onlyCover: true,
+      relativePath: true,
+      subMaxLevel: 2,
+      auto2top: true,
+      homepage: 'home.md'
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
+  <script src="https://unpkg.com/docsify-mermaid@2.0.1/dist/docsify-mermaid.js"></script>
+</body>
+</html>
+

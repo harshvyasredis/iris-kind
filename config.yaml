@@ -22,6 +22,9 @@ versions:
   playbookChart: ""
   # Latest Redis Insight release as of 2026-09-22 (same digest as :latest).
   redisInsightImage: "redis/redisinsight:3.8.0"
+  nginxImage: "nginx:1.27-alpine"
+  workshopWebImage: "iris-kind-workshop-web:0.1.0"
+  workshopVscodeImage: "iris-kind-workshop-vscode:0.1.0"
 
 licenses:
   # Place these files beside config.yaml. They are gitignored.
@@ -73,6 +76,8 @@ databases:
     memory: 100MB
   cr-data:
     memory: 100MB
+  workshop:
+    memory: 100MB
 
 iris:
   namespaces:
@@ -101,3 +106,15 @@ insight:
   namespace: rec
   port: 5540
   resources: {cpu: 100m, memory: 256Mi}
+
+# Browser workbench (docs, VS Code + Continue, app, terminal) that iframes Insight.
+# Change pack to hello | sdlc | agentic, or: make workshop PACK=sdlc
+workshop:
+  namespace: workshop
+  pack: hello
+  hostPort: 8080
+  resources:
+    workbench: {cpu: 50m, memory: 64Mi}
+    docs: {cpu: 50m, memory: 64Mi}
+    vscode: {cpu: 250m, memory: 1Gi}
+    web: {cpu: 250m, memory: 512Mi}

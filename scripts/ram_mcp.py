@@ -2,18 +2,16 @@
 """Stable Cursor MCP entrypoint for the Kind Agent Memory deployment.
 
 The Agent Memory MCP route embeds a generated store ID, which changes every
-time the Kind cluster is recreated. Cursor should launch this process over
-stdio instead of pinning that URL. On each start this script:
-
-1. port-forwards the data plane
-2. finds or creates the store named kind-default
-3. proxies MCP JSON-RPC to /v1/stores/<current-id>/mcp
+time the Kind cluster is recreated. On the Kind host, maintainers can launch
+this process over stdio. Workshop participants use Continue inside workbench
+VS Code instead, with RAM_URL and RAM_STORE_ID set in-cluster (no kubectl).
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -171,6 +169,15 @@ def serve_http(client: httpx.Client, store_id: str, listen: str) -> None:
     httpd.serve_forever()
 
 
+def in_cluster_client() -> tuple[httpx.Client, str] | None:
+    """Workbench VS Code sets RAM_URL + RAM_STORE_ID; skip kubectl port-forward."""
+    base = os.environ.get("RAM_URL", "").strip()
+    store_id = os.environ.get("RAM_STORE_ID", "").strip()
+    if not base or not store_id:
+        return None
+    return httpx.Client(base_url=base.rstrip("/"), timeout=60), store_id
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -179,19 +186,30 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    if args.listen is None and sys.stdin.isatty():
+    clustered = in_cluster_client()
+    if clustered is None and args.listen is None and sys.stdin.isatty():
         sys.stderr.write(
-            "Cursor MCP launcher. Add this server once, then leave it alone "
-            "across Kind recreates:\n\n"
+            "Maintainer MCP launcher on the Kind host (not a workshop step). "
+            "Add this server once, then leave it alone across Kind recreates:\n\n"
             '  "redis-agent-memory": {\n'
             '    "command": "uv",\n'
             f'    "args": ["run", "--directory", "{Path(__file__).resolve().parent.parent}", '
             '"python", "scripts/ram_mcp.py"]\n'
             "  }\n\n"
             "The process speaks MCP on stdio. Use --listen 127.0.0.1:19000 "
-            "only if you want a stable HTTP URL instead.\n"
+            "only if you want a stable HTTP URL instead. Inside workbench "
+            "VS Code, set RAM_URL and RAM_STORE_ID instead of kubectl.\n"
         )
         return 2
+
+    if clustered is not None:
+        client, store_id = clustered
+        with client:
+            if args.listen:
+                serve_http(client, store_id, args.listen)
+            else:
+                serve_stdio(client, store_id)
+        return 0
 
     with RAMDeployment() as ram:
         assert ram.dp is not None

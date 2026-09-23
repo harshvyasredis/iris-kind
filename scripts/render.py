@@ -60,6 +60,18 @@ def validate(config: dict[str, Any]) -> None:
         raise ValueError("versions.contextRetrieverChart is required")
     if not config["versions"].get("redisInsightImage"):
         raise ValueError("versions.redisInsightImage is required")
+    if not config["versions"].get("nginxImage"):
+        raise ValueError("versions.nginxImage is required")
+    if not config["versions"].get("workshopWebImage"):
+        raise ValueError("versions.workshopWebImage is required")
+    if not config["versions"].get("workshopVscodeImage"):
+        raise ValueError("versions.workshopVscodeImage is required")
+    pack = (config.get("workshop") or {}).get("pack")
+    if not pack:
+        raise ValueError("workshop.pack is required")
+    pack_file = ROOT / "workshop" / "packs" / str(pack) / "pack.yaml"
+    if not pack_file.is_file():
+        raise ValueError(f"workshop.pack {pack!r} has no pack.yaml at {pack_file}")
     expected_databases = {
         "ids-metadata",
         "lc-metadata",
@@ -71,6 +83,7 @@ def validate(config: dict[str, Any]) -> None:
         "playbook-content",
         "cr-metadata",
         "cr-data",
+        "workshop",
     }
     actual_databases = set(config["databases"])
     if actual_databases != expected_databases:

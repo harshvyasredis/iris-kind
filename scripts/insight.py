@@ -127,6 +127,10 @@ def manifests(
                                         "name": "RI_PRE_SETUP_DATABASES_PATH",
                                         "value": f"/etc/redisinsight/{CONNECTIONS_FILE}",
                                     },
+                                    {
+                                        "name": "RI_PROXY_PATH",
+                                        "value": "/redisinsight",
+                                    },
                                     *env_for_connections(connections),
                                 ],
                                 "resources": resources,
@@ -142,11 +146,19 @@ def manifests(
                                     },
                                 ],
                                 "readinessProbe": {
-                                    "httpGet": {"path": "/api/health/", "port": "http"},
+                                    "httpGet": {
+                                        "path": "/redisinsight/api/health/",
+                                        "port": "http",
+                                    },
+                                    "initialDelaySeconds": 10,
                                     "periodSeconds": 5,
                                 },
                                 "livenessProbe": {
-                                    "httpGet": {"path": "/api/health/", "port": "http"},
+                                    "httpGet": {
+                                        "path": "/redisinsight/api/health/",
+                                        "port": "http",
+                                    },
+                                    "initialDelaySeconds": 20,
                                     "periodSeconds": 15,
                                 },
                                 "securityContext": {

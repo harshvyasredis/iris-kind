@@ -1,0 +1,347 @@
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* Font Awesome */
+@import '@fortawesome/fontawesome-free/css/all.css';
+
+/* Redis Branding */
+:root {
+  /* Fonts */
+  --font-sans: 'Space Grotesk', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+
+  /* Colors */
+  --color-redis-white: #ffffff;
+  --color-redis-hyper: #ff4438;
+  --color-redis-deep-hyper: #eb352a;
+  --color-redis-black: #000000;
+  --color-redis-black-90: #191919;
+  --color-redis-black-70: #4c4c4c;
+  --color-redis-black-50: #808080;
+  --color-redis-black-30: #b2b2b2;
+  --color-redis-black-10: #e5e5e5;
+  --color-redis-light-gray: #f0f0f0;
+  --color-redis-midnight: #091a23;
+  --color-redis-dusk: #163341;
+  --color-redis-dusk-90: #2d4754;
+  --color-redis-dusk-70: #5c707a;
+  --color-redis-dusk-50: #8a99a0;
+  --color-redis-dusk-30: #b9c2c6;
+  --color-redis-dusk-10: #e8ebec;
+  --color-redis-violet: #c795e3;
+  --color-redis-violet-50: #e3caf1;
+  --color-redis-violet-20: #f4eaf9;
+  --color-redis-violet-10: #f9f4fc;
+  --color-redis-sky-blue: #80dbff;
+  --color-redis-sky-blue-50: #bfedff;
+  --color-redis-sky-blue-20: #e6f8ff;
+  --color-redis-sky-blue-10: #f2fbff;
+  --color-redis-yellow: #dcff1e;
+  --color-redis-yellow-50: #f1ffa5;
+  --color-redis-yellow-20: #f8ffd2;
+  --color-redis-yellow-10: #fbffe8;
+}
+
+/* Theme Variables */
+:root {
+  --bg-primary: var(--color-redis-midnight);
+  --bg-header: var(--color-redis-dusk);
+  --text-primary: var(--color-redis-white);
+  --text-header: var(--color-redis-white);
+  --accent-color: var(--color-redis-sky-blue-50);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+header {
+  background: var(--bg-header);
+  color: var(--text-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+/* Hamburger Menu Button */
+.menu-button {
+  background: none;
+  margin: 1rem 1.5rem;
+  border: none;
+  color: var(--text-header);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.menu-button:hover {
+  color: var(--accent-color);
+}
+
+/* Panel Menu Dropdown */
+.panel-menu {
+  position: absolute;
+  top: 100%;
+  left: 0.5rem;
+  background: var(--bg-header);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0;
+  min-width: 200px;
+  z-index: 100;
+  margin-top: 0.25rem;
+}
+
+.panel-menu.hidden {
+  display: none;
+}
+
+.panel-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.panel-menu-item:hover {
+  background: var(--color-redis-dusk-90);
+}
+
+.panel-menu-item input[type="checkbox"] {
+  accent-color: var(--accent-color);
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.panel-menu-item label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  flex: 1;
+}
+
+.panel-menu-item i {
+  width: 1rem;
+  text-align: center;
+}
+
+.panel-menu-separator {
+  height: 1px;
+  background: var(--color-redis-dusk-70);
+  margin: 0.5rem 1rem;
+}
+
+header .logo-link {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.25rem 1.25rem 1rem; /* top right bottom left */
+  transition: opacity 0.2s ease;
+}
+
+header .logo-link:hover {
+  opacity: 0.8;
+}
+
+header .logo {
+  height: 1.5rem;
+  width: auto;
+}
+
+header h1 {
+  flex: 1;
+  text-align: center;
+  font-size: 1.375rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+main {
+  display: flex;
+  height: calc(100vh - 70px);
+  background: var(--bg-primary);
+  padding: 0 0.5rem 0.5rem 0.5rem;
+  gap: 0.5rem;
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.panel.hidden {
+  display: none;
+}
+
+/* Sidebar */
+#sidebar {
+  width: 30%;
+  min-width: 200px;
+}
+
+/* Right panel stack */
+.right-stack {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.right-stack .panel {
+  flex: 1;
+  min-height: 100px;
+}
+
+/* Maximized panel fills the right stack */
+.right-stack .panel.maximized {
+  flex: 1;
+}
+
+/* Panel header bar */
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.5rem;
+  background: var(--color-redis-dusk);
+  border-bottom: 1px solid var(--color-redis-dusk-70);
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.panel-controls {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.panel-control-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  text-decoration: none;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.panel-control-btn:hover {
+  color: var(--text-primary);
+  background: var(--color-redis-dusk-70);
+}
+
+iframe {
+  width: 100%;
+  flex: 1;
+  border: none;
+  background: var(--bg-primary);
+}
+
+/* Loading overlay for panels */
+.panel-content {
+  position: relative;
+  flex: 1;
+  display: flex;
+}
+
+.panel-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  gap: 1rem;
+  z-index: 10;
+}
+
+.panel-loading.hidden {
+  display: none;
+}
+
+.panel-loading i {
+  font-size: 2rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.panel-loading span {
+  font-size: 0.875rem;
+}
+
+
+
+.resizer {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resizer-handle {
+  background: var(--accent-color);
+  border-radius: 0.25rem;
+}
+
+.resizer-vertical {
+  width: 0.5rem;
+}
+
+.resizer-vertical .resizer-handle {
+  width: 0.25rem;
+  height: 25%;
+  cursor: col-resize;
+}
+
+.resizer-horizontal {
+  height: 0.5rem;
+}
+
+.resizer-horizontal .resizer-handle {
+  width: 25%;
+  height: 0.25rem;
+  cursor: row-resize;
+}
+

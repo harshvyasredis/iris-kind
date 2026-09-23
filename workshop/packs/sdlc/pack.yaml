@@ -1,0 +1,15 @@
+id: sdlc
+title: "Iris in the developer SDLC"
+requires: [langcache, ram]
+optional: [context-retriever]
+panels:
+  vscode: { visible: true }
+  app: { visible: false }
+  terminal: { visible: true }
+  redisinsight: { visible: true }
+env:
+  redis: workshop
+  langcache: kind-default
+  ram: kind-default
+  context_retriever: true
+codeRoot: code

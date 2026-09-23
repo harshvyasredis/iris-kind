@@ -18,6 +18,11 @@ from langcache_api import (  # noqa: E402
     delete_cache,
     revoke_api_key,
 )
+from cr_api import (  # noqa: E402
+    CRDeployment,
+    license_present as cr_license_present,
+    load_surface_state,
+)
 
 
 @pytest.fixture(scope="session")
@@ -44,6 +49,22 @@ def run_id() -> str:
 def lc() -> Iterator[LangCacheDeployment]:
     with LangCacheDeployment() as deployment:
         yield deployment
+
+
+@pytest.fixture(scope="session")
+def cr() -> Iterator[CRDeployment]:
+    if not cr_license_present():
+        pytest.skip("cr.license is not present")
+    with CRDeployment() as deployment:
+        yield deployment
+
+
+@pytest.fixture(scope="session")
+def cr_surface(cr: CRDeployment) -> dict[str, str]:
+    state = load_surface_state()
+    if not state.get("surfaceId") or not state.get("agentKey"):
+        pytest.skip("default Context Retriever surface is not provisioned")
+    return state
 
 
 @pytest.fixture

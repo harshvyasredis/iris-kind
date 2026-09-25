@@ -32,8 +32,6 @@ Do not imply the assistant should operate the gateway unsupervised.
    make setup
    make validate
    make all
-   make redo STEP=workshop
-   make workshop PACK=sdlc
    make status
    ```
 

@@ -108,10 +108,10 @@ insight:
   resources: {cpu: 100m, memory: 256Mi}
 
 # Browser workbench (docs, VS Code + Continue, app, terminal) that iframes Insight.
-# Change pack to hello | sdlc | agentic, or: make workshop PACK=sdlc
+# Default is sdlc. Override with hello | agentic, or: make workshop PACK=agentic
 workshop:
   namespace: workshop
-  pack: hello
+  pack: sdlc
   # hostPort is published on the Docker host by kind; nodePort is the Service
   # port it maps to. Insight is proxied at /redisinsight/, so this one port is
   # the whole lab surface and no port-forward is needed.

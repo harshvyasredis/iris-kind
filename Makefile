@@ -241,12 +241,12 @@ $(STAMPS)/workshop: $(STAMPS)/insight $(STAMPS)/langcache-cache $(STAMPS)/ram-st
 	@$(LOGGED) $(UV_RUN) python scripts/workshop.py --pack "$(PACK)" $(TEE_TO)/workshop.log
 	@touch $@
 
-workshop: $(STAMPS)/workshop ## Install the workbench for workshop.pack (override with PACK=sdlc).
+workshop: $(STAMPS)/workshop ## Install the workbench for workshop.pack (override with PACK=agentic).
 	@echo "Open the workbench (no port-forward):"
 	@echo "  http://127.0.0.1:$(WORKSHOP_HOST_PORT)/"
 	@echo "  (on a remote/lab VM behind a reverse proxy, use that proxy's URL for this port/host instead of 127.0.0.1)"
 	@echo "VS Code in the workbench is the participant IDE (Continue + Iris MCP)."
-	@echo "Switch packs with: make redo STEP=workshop && make workshop PACK=sdlc"
+	@echo "Switch packs with: make redo STEP=workshop && make workshop PACK=agentic"
 
 # ---------------------------------------------------------------------------
 # Friendly names for the steps above.

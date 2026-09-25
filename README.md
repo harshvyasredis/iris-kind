@@ -56,7 +56,7 @@ sudo env DOCKER_API_VERSION=1.43 make status
 `make all` creates Kind, the operator, a 3-node REC, eleven REDBs, LangCache,
 Agent Memory, Context Retriever, default
 cache/store/surface `kind-default`, Redis Insight, and the workshop workbench
-(`hello` pack). First run is several minutes. A second `make all` is a no-op
+(`sdlc` pack). First run is several minutes. A second `make all` is a no-op
 unless inputs changed.
 
 ```bash
@@ -87,25 +87,20 @@ kubectl -n ram port-forward svc/redis-agent-memory 9001:9000
 kubectl -n rec port-forward svc/redisinsight 5540:5540
 ```
 
-Packs live under `workshop/packs/`. `make all` installs `hello`. For a
-facilitated session, switch packs without rebuilding Kind — SDLC first, then
-the agentic arena. `make redo STEP=workshop` is required each time so the
-workbench stamp is not treated as already done:
+Packs live under `workshop/packs/`. `make all` installs `sdlc`. After that lab,
+switch to the agentic arena without rebuilding Kind. `make redo STEP=workshop`
+is required so the workbench stamp is not treated as already done:
 
 ```bash
-# 1. ~15-minute SDLC lab (Continue + Iris MCP)
-sudo env DOCKER_API_VERSION=1.43 make redo STEP=workshop
-sudo env DOCKER_API_VERSION=1.43 make workshop PACK=sdlc
-
-# 2. 90-minute agentic lab (App panel coding arena)
+# After the ~15-minute SDLC lab, load the 90-minute agentic arena
 sudo env DOCKER_API_VERSION=1.43 make redo STEP=workshop
 sudo env DOCKER_API_VERSION=1.43 make workshop PACK=agentic
 ```
 
-Reload `http://127.0.0.1:8080/` after each switch. `sdlc` and `agentic` pre-wire
-Continue to Agent Memory, LangCache, and Context Retriever. `agentic` also
-provisions isolated `kind-agentic` resources and requires `cr.license`. VS Code
-in the workbench is the IDE.
+Reload `http://127.0.0.1:8080/` after the switch. `hello` is still available with
+`PACK=hello`. `sdlc` and `agentic` pre-wire Continue to Agent Memory, LangCache,
+and Context Retriever. `agentic` also provisions isolated `kind-agentic`
+resources and requires `cr.license`. VS Code in the workbench is the IDE.
 
 **Insight** — workbench Insight panel, or `http://127.0.0.1:8080/redisinsight/`
 (the app is mounted at `/redisinsight` so the iframe works). All eleven REDBs
